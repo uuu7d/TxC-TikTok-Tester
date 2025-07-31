@@ -13,24 +13,34 @@ jobs:
     - name: Checkout Repository
       uses: actions/checkout@v4
 
-    - name: Install Theos و Xcode
+    - name: Install Dependencies
       run: |
-        # تثبيت Theos (مطلوب لبناء tweaks)
-        git clone --recursive https://github.com/theos/theos.git $HOME/theos
-        echo "export THEOS=$HOME/theos" >> $GITHUB_ENV
-        echo "export PATH=$THEOS/bin:$PATH" >> $GITHUB_ENV
+        # تثبيت Theos والأدوات المطلوبة
+        git clone --recursive https://github.com/theos/theos.git "$HOME/theos"
+        echo "THEOS=$HOME/theos" >> $GITHUB_ENV
+        echo "PATH=$HOME/theos/bin:$PATH" >> $GITHUB_ENV
         
-        # تثبيت أدوات Xcode (مطلوبة للتوقيع)
-        xcode-select --install || true
+        # تثبيت أدوات البناء
+        brew install ldid xz
+        sudo xcode-select --switch /Applications/Xcode.app
+        
+        # تثبيت SDK iOS (مثال)
+        mkdir -p "$HOME/theos/sdks"
+        curl -LO https://github.com/theos/sdks/archive/master.zip
+        unzip master.zip -d "$HOME/theos/sdks"
+        mv "$HOME/theos/sdks/sdks-master/"* "$HOME/theos/sdks/"
+        rm master.zip
 
-    - name: Build the Tweak as .dylib
+    - name: Build Project
       run: |
-        cd $GITHUB_WORKSPACE
+        cd "$GITHUB_WORKSPACE"
         make clean
-        make package  # هذا سيولد .deb (الذي يحتوي على .dylib داخله)
+        make package
 
-    - name: Upload .deb Artifact
+    - name: Upload Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: TxC-TikTok.deb
-        path: packages/*.deb  # المسار الذي يتم فيه تخزين ملف .deb الناتج
+        name: TxC-TikTok-Package
+        path: |
+          packages/*.deb
+          .theos/_/Payload/*.dylib
