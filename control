@@ -1,9 +1,9 @@
-Package: co.1txc.instatxc
-Name: InstaTxC
+Package: com.yourname.txctiktok
+Name: TxC-TikTok
 Version: 1.0
 Architecture: iphoneos-arm
-Depends: mobilesubstrate
-Description: Add more features to social media apps.
-Maintainer: Azozz ALFiras
-Author: Azozz ALFiras
+Description: Tweaking TikTok app
+Maintainer: Your Name <your@email.com>
+Author: Your Name <your@email.com>
 Section: Tweaks
+Depends: mobilesubstrate (>= 0.9.5000)
