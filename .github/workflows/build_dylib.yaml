@@ -1,0 +1,36 @@
+name: Build DYLIB/DEB for TxC-TikTok
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
+
+    - name: Install Theos و Xcode
+      run: |
+        # تثبيت Theos (مطلوب لبناء tweaks)
+        git clone --recursive https://github.com/theos/theos.git $HOME/theos
+        echo "export THEOS=$HOME/theos" >> $GITHUB_ENV
+        echo "export PATH=$THEOS/bin:$PATH" >> $GITHUB_ENV
+        
+        # تثبيت أدوات Xcode (مطلوبة للتوقيع)
+        xcode-select --install || true
+
+    - name: Build the Tweak as .dylib
+      run: |
+        cd $GITHUB_WORKSPACE
+        make clean
+        make package  # هذا سيولد .deb (الذي يحتوي على .dylib داخله)
+
+    - name: Upload .deb Artifact
+      uses: actions/upload-artifact@v3
+      with:
+        name: TxC-TikTok.deb
+        path: packages/*.deb  # المسار الذي يتم فيه تخزين ملف .deb الناتج
