@@ -30,7 +30,7 @@ jobs:
         make package  # هذا سيولد .deb (الذي يحتوي على .dylib داخله)
 
     - name: Upload .deb Artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: TxC-TikTok.deb
         path: packages/*.deb  # المسار الذي يتم فيه تخزين ملف .deb الناتج
